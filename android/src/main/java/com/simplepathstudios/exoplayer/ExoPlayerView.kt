@@ -135,6 +135,44 @@ class ExoPlayerView(
         if (aspectRatio > 0.0f && videoAspectRatio != aspectRatio) {
             videoAspectRatio = aspectRatio
             post {
+                val containerWidth = width
+                val containerHeight = height
+                if (containerWidth > 0 && containerHeight > 0) {
+                    var targetWidth = containerWidth
+                    var targetHeight = containerHeight
+
+                    val containerRatio = containerWidth.toFloat() / containerHeight.toFloat()
+                    if (containerRatio > videoAspectRatio) {
+                        targetWidth = (containerHeight.toFloat() * videoAspectRatio).toInt()
+                        targetHeight = containerHeight
+                    } else {
+                        targetWidth = containerWidth
+                        targetHeight = (containerWidth.toFloat() / videoAspectRatio).toInt()
+                    }
+
+                    val childLeft = (containerWidth - targetWidth) / 2
+                    val childTop = (containerHeight - targetHeight) / 2
+
+                    surfaceView.measure(
+                        MeasureSpec.makeMeasureSpec(targetWidth, MeasureSpec.EXACTLY),
+                        MeasureSpec.makeMeasureSpec(targetHeight, MeasureSpec.EXACTLY),
+                    )
+                    surfaceView.layout(childLeft, childTop, childLeft + targetWidth, childTop + targetHeight)
+
+                    if (hasBitmapCues) {
+                        subtitleView.measure(
+                            MeasureSpec.makeMeasureSpec(targetWidth, MeasureSpec.EXACTLY),
+                            MeasureSpec.makeMeasureSpec(targetHeight, MeasureSpec.EXACTLY),
+                        )
+                        subtitleView.layout(childLeft, childTop, childLeft + targetWidth, childTop + targetHeight)
+                    } else {
+                        subtitleView.measure(
+                            MeasureSpec.makeMeasureSpec(containerWidth, MeasureSpec.EXACTLY),
+                            MeasureSpec.makeMeasureSpec(containerHeight, MeasureSpec.EXACTLY),
+                        )
+                        subtitleView.layout(0, 0, containerWidth, containerHeight)
+                    }
+                }
                 requestLayout()
                 invalidate()
             }
