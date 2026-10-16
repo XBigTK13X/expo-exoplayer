@@ -21,7 +21,7 @@
     "react-native",
     "expo",
     "expo-exoplayer",
-    "ExpoExoPlayer"
+    "ExoPlayer"
   ],
   "repository": "https://github.com/XBigTK13X/expo-exoplayer",
   "bugs": {

@@ -1,6 +1,10 @@
 {
-  "platforms": ["android"],
+  "platforms": [
+    "android"
+  ],
   "android": {
-    "modules": ["com.simplepathstudios.exoplayer.ExpoExoPlayerModule"]
+    "modules": [
+      "com.simplepathstudios.exoplayer.ExoPlayerViewModule"
+    ]
   }
 }

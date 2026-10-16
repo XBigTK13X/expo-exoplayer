@@ -1,4 +1,5 @@
-export { default as ExpoExoPlayerModule } from './ExpoExoPlayerModule'
-export { default as ExoPlayerView } from './ExpoExoPlayerView'
-export { useExoPlayer } from './useExoPlayer'
-export * from './ExpoExoPlayer.types'
+import { default as ExoPlayerView } from './ExoPlayerView'
+export { default as ExoPlayerView } from './ExoPlayerView'
+export * from './ExoPlayerViewTypes'
+
+export default ExoPlayerView
