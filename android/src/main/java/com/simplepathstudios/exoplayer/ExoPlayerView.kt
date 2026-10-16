@@ -44,6 +44,7 @@ class ExoPlayerView(
 
     init {
         surfaceView.holder.addCallback(this)
+        surfaceView.alpha = 0.0f
         addView(
             surfaceView,
             LayoutParams(
@@ -171,6 +172,11 @@ class ExoPlayerView(
                             MeasureSpec.makeMeasureSpec(containerHeight, MeasureSpec.EXACTLY),
                         )
                         subtitleView.layout(0, 0, containerWidth, containerHeight)
+                    }
+
+                    // Reveal immediately once correct dimensions and letterboxing are active
+                    if (surfaceView.alpha == 0.0f) {
+                        surfaceView.alpha = 1.0f
                     }
                 }
                 requestLayout()
@@ -365,6 +371,8 @@ class ExoPlayerView(
     }
 
     fun cleanup() {
+        surfaceView.alpha = 0.0f
+        videoAspectRatio = 0.0f
         renderer?.destroy()
         renderer = null
         surfaceView.holder.removeCallback(this)
