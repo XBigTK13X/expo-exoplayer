@@ -1,0 +1,55 @@
+{
+  "name": "expo-exoplayer",
+  "version": "1.0.0",
+  "description": "A thin ExoPlayer wrapper for expo",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf build",
+    "lint": "eslint src/",
+    "test": "jest",
+    "prepare": "tsc",
+    "prepublishOnly": "npm run clean && npm run build"
+  },
+  "files": [
+    "build",
+    "android",
+    "expo-module.config.json"
+  ],
+  "keywords": [
+    "react-native",
+    "expo",
+    "expo-exoplayer",
+    "ExpoExoPlayer"
+  ],
+  "repository": "https://github.com/XBigTK13X/expo-exoplayer",
+  "bugs": {
+    "url": "https://github.com/XBigTK13X/expo-exoplayer/issues"
+  },
+  "author": "XBigTK13X <xbigtk13x@gmail.com> (https://github.com/XBigTK13X)",
+  "license": "GPL-3.0",
+  "homepage": "https://github.com/XBigTK13X/expo-exoplayer#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "@babel/core": "^7.26.0",
+    "@react-native/jest-preset": "0.88.0",
+    "@types/jest": "^30.0.0",
+    "@types/react": "~19.3.0",
+    "babel-preset-expo": "~58.0.15",
+    "eslint": "~9.39.4",
+    "eslint-config-universe": "^16.1.2",
+    "expo": "^58.0.11",
+    "jest": "^30.0.0",
+    "jest-expo": "~58.0.11",
+    "prettier": "^3.0.0",
+    "react": "19.3.0",
+    "react-native": "0.88.0",
+    "typescript": "~6.0.3"
+  },
+  "peerDependencies": {
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
+  }
+}

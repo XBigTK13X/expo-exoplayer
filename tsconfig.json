@@ -1,0 +1,32 @@
+{
+    "compilerOptions": {
+        "target": "esnext",
+        "module": "commonjs",
+        "lib": [
+            "esnext"
+        ],
+        "allowJs": true,
+        "jsx": "react-native",
+        "declaration": true,
+        "declarationMap": false,
+        "sourceMap": false,
+        "outDir": "./build",
+        "rootDir": "./src",
+        "strict": true,
+        "noImplicitAny": true,
+        "strictNullChecks": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true
+    },
+    "include": [
+        "src/**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "build",
+        "internal",
+        "android",
+        "example"
+    ]
+}

@@ -1,0 +1,16 @@
+{
+    "expo": {
+        "name": "expo-exoplayer-example",
+        "slug": "expo-exoplayer-example",
+        "version": "1.0.0",
+        "platforms": [
+            "android"
+        ],
+        "android": {
+            "package": "com.simplepathstudios.exoplayer.example",
+            "adaptiveIcon": {
+                "backgroundColor": "#ffffff"
+            }
+        }
+    }
+}
