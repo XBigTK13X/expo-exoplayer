@@ -34,6 +34,7 @@ class ExoPlayerView(
     private var renderer: ExoPlayerRenderer? = null
     private var videoAspectRatio: Float = 0.0f
     private var hasBitmapCues: Boolean = false
+    private var rawCues: List<Cue> = emptyList()
 
     var subScale: Float = 1.0f
     var subColor: Int = Color.WHITE
@@ -138,12 +139,51 @@ class ExoPlayerView(
     }
 
     fun updateCues(cues: List<Cue>) {
+        rawCues = cues
         val containsBitmap = cues.any { cueItem -> cueItem.bitmap != null }
         if (hasBitmapCues != containsBitmap) {
             hasBitmapCues = containsBitmap
             requestLayout()
         }
-        subtitleView.setCues(cues)
+        applyScaledCues()
+    }
+
+    private fun applyScaledCues() {
+        if (rawCues.isEmpty()) {
+            subtitleView.setCues(emptyList())
+            return
+        }
+
+        if (subScale == 1.0f || !hasBitmapCues) {
+            subtitleView.setCues(rawCues)
+            return
+        }
+
+        val scaledCues =
+            rawCues.map { cueItem ->
+                val cueBitmap = cueItem.bitmap
+                if (cueBitmap == null) {
+                    cueItem
+                } else {
+                    val scaledWidthFraction = cueItem.size * subScale
+                    val scaledHeightFraction = cueItem.bitmapHeight * subScale
+
+                    val originalCenterX = cueItem.position + (cueItem.size / 2f)
+                    val originalCenterY = cueItem.line + (cueItem.bitmapHeight / 2f)
+
+                    val adjustedPositionX = originalCenterX - (scaledWidthFraction / 2f)
+                    val adjustedPositionY = originalCenterY - (scaledHeightFraction / 2f)
+
+                    cueItem
+                        .buildUpon()
+                        .setPosition(adjustedPositionX)
+                        .setLine(adjustedPositionY, cueItem.lineType)
+                        .setSize(scaledWidthFraction)
+                        .setBitmapHeight(scaledHeightFraction)
+                        .build()
+                }
+            }
+        subtitleView.setCues(scaledCues)
     }
 
     fun updateVideoAspectRatio(aspectRatio: Float) {
@@ -350,7 +390,10 @@ class ExoPlayerView(
                 "sub-scale" -> {
                     parts[2].toFloatOrNull()?.let { scaleValue ->
                         subScale = scaleValue
-                        post { requestLayout() }
+                        post {
+                            applyScaledCues()
+                            requestLayout()
+                        }
                     }
                     return
                 }
@@ -385,6 +428,7 @@ class ExoPlayerView(
     fun cleanup() {
         surfaceView.alpha = 0.0f
         videoAspectRatio = 0.0f
+        rawCues = emptyList()
         renderer?.destroy()
         renderer = null
         surfaceView.holder.removeCallback(this)
