@@ -90,6 +90,20 @@ class ExoPlayerView(
         }
     }
 
+    private fun parseFlexibleColor(colorInput: String): Int? {
+        val trimmed = colorInput.trim()
+        if (trimmed.contains("/")) {
+            val pieces = trimmed.split("/")
+            val shadePart = pieces[0].removePrefix("#")
+            val alphaPart = pieces[1].removePrefix("#")
+            val formatted = "#$alphaPart$shadePart"
+            return runCatching { Color.parseColor(formatted) }.getOrNull()
+        }
+
+        val normalized = if (trimmed.startsWith("#")) trimmed else "#$trimmed"
+        return runCatching { Color.parseColor(normalized) }.getOrNull()
+    }
+
     fun applyCustomSubtitleStyle() {
         val style =
             CaptionStyleCompat(
@@ -342,19 +356,17 @@ class ExoPlayerView(
                 }
 
                 "sub-color" -> {
-                    try {
-                        subColor = Color.parseColor(parts[2])
+                    parseFlexibleColor(parts[2])?.let { parsedColor ->
+                        subColor = parsedColor
                         post { applyCustomSubtitleStyle() }
-                    } catch (_: Exception) {
                     }
                     return
                 }
 
                 "sub-border-color" -> {
-                    try {
-                        subOutlineColor = Color.parseColor(parts[2])
+                    parseFlexibleColor(parts[2])?.let { parsedColor ->
+                        subOutlineColor = parsedColor
                         post { applyCustomSubtitleStyle() }
-                    } catch (_: Exception) {
                     }
                     return
                 }
