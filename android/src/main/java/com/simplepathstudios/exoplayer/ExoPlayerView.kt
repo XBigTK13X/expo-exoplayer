@@ -356,7 +356,7 @@ class ExoPlayerView(
 
     override fun onDetachedFromWindow() {
         attached = false
-        reconcileRenderer()
+        cleanup()
         super.onDetachedFromWindow()
     }
 
@@ -429,8 +429,12 @@ class ExoPlayerView(
         surfaceView.alpha = 0.0f
         videoAspectRatio = 0.0f
         rawCues = emptyList()
+        subtitleView.setCues(emptyList())
         renderer?.destroy()
         renderer = null
-        surfaceView.holder.removeCallback(this)
+        try {
+            surfaceView.holder.removeCallback(this)
+        } catch (_: Exception) {
+        }
     }
 }

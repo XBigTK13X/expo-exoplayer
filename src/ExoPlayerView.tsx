@@ -15,11 +15,17 @@ const styles: any = {
 const ExoPlayerViewNative: React.ComponentType<ExoPlayerViewProps> = requireNativeView('ExoPlayerView')
 
 export const ExoPlayerView = React.forwardRef<ExoPlayerViewNativeMethods, ExoPlayerViewProps>((props: any, parentRef: any) => {
+    const nativeRef = React.useRef<any>(null)
+
+    React.useImperativeHandle(parentRef, () => ({
+        runCommand: (orders: string) => nativeRef.current?.runCommand?.(orders),
+        setOptionString: (options: string) => nativeRef.current?.setOptionString?.(options),
+        cleanup: () => nativeRef.current?.cleanup?.()
+    }))
+
     React.useEffect(() => {
         return () => {
-            if (parentRef?.current?.cleanup) {
-                parentRef.current.cleanup()
-            }
+            nativeRef.current?.cleanup?.()
         }
     }, [])
 
@@ -50,7 +56,7 @@ export const ExoPlayerView = React.forwardRef<ExoPlayerViewNativeMethods, ExoPla
 
     return (
         <ExoPlayerViewNative
-            ref={parentRef}
+            ref={nativeRef}
             style={props.surfaceStyle ? props.surfaceStyle : styles.videoPlayer}
             playUrl={props.playUrl}
             isPlaying={props.isPlaying}

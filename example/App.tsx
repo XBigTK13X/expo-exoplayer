@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { View, Pressable, TouchableOpacity, AppState, Text } from 'react-native'
+import { View, Pressable, TouchableOpacity, AppState, Text, BackHandler } from 'react-native'
 import ExoPlayerView from 'expo-exoplayer'
 
 const circularReplacer = () => {
@@ -98,6 +98,19 @@ function VideoPage({ setPage }) {
   const nativeRef = React.useRef(null)
 
   React.useEffect(() => {
+    const onBackPress = () => {
+      setPage('home')
+      return true
+    }
+
+    const backSubscription = BackHandler.addEventListener('hardwareBackPress', onBackPress)
+
+    return () => {
+      backSubscription.remove()
+    }
+  }, [setPage])
+
+  React.useEffect(() => {
     const appStateSubscription = AppState.addEventListener('change', currentAppState => {
       if (currentAppState === 'background') {
         console.log('Cleanup background')
@@ -108,7 +121,7 @@ function VideoPage({ setPage }) {
     return () => {
       appStateSubscription.remove()
     }
-  }, [])
+  }, [setPage])
 
   React.useEffect(() => {
     if (!nativeRef.current) return
