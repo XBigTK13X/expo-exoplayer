@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { View, Pressable, TouchableOpacity, AppState, Text, BackHandler } from 'react-native'
-import ExoPlayerView from 'expo-exoplayer'
+import ExoPlayerView from '@snowsuite/expo-exoplayer'
 
 const circularReplacer = () => {
   const seen = new WeakSet()

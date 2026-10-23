@@ -6,7 +6,7 @@ module.exports = async (env, argv) => {
     {
       ...env,
       babel: {
-        dangerouslyAddModulePathsToTranspile: ['expo-exoplayer'],
+        dangerouslyAddModulePathsToTranspile: ['@snowsuite/expo-exoplayer'],
       },
     },
     argv

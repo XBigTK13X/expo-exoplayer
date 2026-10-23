@@ -2,7 +2,7 @@
     "expo": {
         "name": "expo-exoplayer-example",
         "slug": "expo-exoplayer-example",
-    "version": "1.0.4",
+    "version": "1.0.5",
         "platforms": [
             "android"
         ],
