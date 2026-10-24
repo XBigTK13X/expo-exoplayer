@@ -1,6 +1,6 @@
 {
   "name": "@snowsuite/expo-exoplayer",
-    "version": "1.0.5",
+    "version": "1.0.6",
   "description": "A thin ExoPlayer wrapper for expo",
   "main": "build/index.js",
   "types": "build/index.d.ts",

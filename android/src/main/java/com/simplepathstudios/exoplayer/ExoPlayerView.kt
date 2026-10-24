@@ -119,10 +119,23 @@ class ExoPlayerView(
         subtitleView.setApplyEmbeddedStyles(false)
         subtitleView.setApplyEmbeddedFontSizes(false)
 
+        updateSubtitleTextSize()
+        applyScaledCues()
+
         subtitleView.post {
             applyStrokeRecursively(subtitleView)
         }
         requestLayout()
+    }
+
+    private fun updateSubtitleTextSize() {
+        val containerWidth = width
+        val containerHeight = height
+        val referenceDimension = minOf(containerWidth, containerHeight).toFloat()
+        if (referenceDimension > 0f) {
+            val baseSize = referenceDimension * 0.0533f * subScale
+            subtitleView.setFixedTextSize(TypedValue.COMPLEX_UNIT_PX, baseSize)
+        }
     }
 
     private fun applyStrokeRecursively(view: android.view.View) {
@@ -145,6 +158,7 @@ class ExoPlayerView(
             hasBitmapCues = containsBitmap
             requestLayout()
         }
+        updateSubtitleTextSize()
         applyScaledCues()
     }
 
@@ -154,36 +168,40 @@ class ExoPlayerView(
             return
         }
 
-        if (subScale == 1.0f || !hasBitmapCues) {
-            subtitleView.setCues(rawCues)
-            return
-        }
-
-        val scaledCues =
+        val processedCues =
             rawCues.map { cueItem ->
                 val cueBitmap = cueItem.bitmap
-                if (cueBitmap == null) {
-                    cueItem
+                if (cueBitmap != null) {
+                    if (subScale == 1.0f) {
+                        cueItem
+                    } else {
+                        val scaledWidthFraction = cueItem.size * subScale
+                        val scaledHeightFraction = cueItem.bitmapHeight * subScale
+
+                        val originalCenterX = cueItem.position + (cueItem.size / 2f)
+                        val originalCenterY = cueItem.line + (cueItem.bitmapHeight / 2f)
+
+                        val adjustedPositionX = originalCenterX - (scaledWidthFraction / 2f)
+                        val adjustedPositionY = originalCenterY - (scaledHeightFraction / 2f)
+
+                        cueItem
+                            .buildUpon()
+                            .setPosition(adjustedPositionX)
+                            .setLine(adjustedPositionY, cueItem.lineType)
+                            .setSize(scaledWidthFraction)
+                            .setBitmapHeight(scaledHeightFraction)
+                            .build()
+                    }
                 } else {
-                    val scaledWidthFraction = cueItem.size * subScale
-                    val scaledHeightFraction = cueItem.bitmapHeight * subScale
-
-                    val originalCenterX = cueItem.position + (cueItem.size / 2f)
-                    val originalCenterY = cueItem.line + (cueItem.bitmapHeight / 2f)
-
-                    val adjustedPositionX = originalCenterX - (scaledWidthFraction / 2f)
-                    val adjustedPositionY = originalCenterY - (scaledHeightFraction / 2f)
-
+                    val cueText = cueItem.text?.toString() ?: ""
                     cueItem
                         .buildUpon()
-                        .setPosition(adjustedPositionX)
-                        .setLine(adjustedPositionY, cueItem.lineType)
-                        .setSize(scaledWidthFraction)
-                        .setBitmapHeight(scaledHeightFraction)
+                        .setText(cueText)
+                        .setTextSize(Cue.DIMEN_UNSET, Cue.TYPE_UNSET)
                         .build()
                 }
             }
-        subtitleView.setCues(scaledCues)
+        subtitleView.setCues(processedCues)
     }
 
     fun updateVideoAspectRatio(aspectRatio: Float) {
@@ -228,7 +246,6 @@ class ExoPlayerView(
                         subtitleView.layout(0, 0, containerWidth, containerHeight)
                     }
 
-                    // Reveal immediately once correct dimensions and letterboxing are active
                     if (surfaceView.alpha == 0.0f) {
                         surfaceView.alpha = 1.0f
                     }
@@ -312,11 +329,7 @@ class ExoPlayerView(
             subtitleView.layout(0, 0, containerWidth, containerHeight)
         }
 
-        val referenceDimension = minOf(containerWidth, containerHeight).toFloat()
-        if (referenceDimension > 0f) {
-            val baseSize = referenceDimension * 0.0533f * subScale
-            subtitleView.setFixedTextSize(TypedValue.COMPLEX_UNIT_PX, baseSize)
-        }
+        updateSubtitleTextSize()
         post {
             applyStrokeRecursively(subtitleView)
         }
@@ -391,6 +404,7 @@ class ExoPlayerView(
                     parts[2].toFloatOrNull()?.let { scaleValue ->
                         subScale = scaleValue
                         post {
+                            updateSubtitleTextSize()
                             applyScaledCues()
                             requestLayout()
                         }
